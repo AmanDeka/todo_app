@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
+import { useParams } from 'react-router-dom';
 import Task from './Task';
 
 interface TaskType {
@@ -8,21 +9,15 @@ interface TaskType {
   completed: boolean;
 }
 
-interface PageProps {
-  initialPageName: string;
-}
 
-const Page: React.FC<PageProps> = ({ initialPageName }) => {
-  const [pageName, setPageName] = useState(initialPageName);
+const Page: React.FC = () => {
+  const {pageId} = useParams();
   const [tasks, setTasks] = useState<TaskType[]>([
     { id: '1', heading: 'Task 1', description: 'Description 1', completed: false },
     { id: '2', heading: 'Task 2', description: 'Description 2', completed: true },
     // Add more tasks as needed
   ]);
 
-  const handlePageNameChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    setPageName(event.target.value);
-  };
 
   const handleTaskAdd = () => {
     const newTask: TaskType = {
@@ -49,8 +44,7 @@ const Page: React.FC<PageProps> = ({ initialPageName }) => {
       <h1>
         <input
           type="text"
-          value={pageName}
-          onChange={handlePageNameChange}
+          value={pageId}
           placeholder="Page Name"
         />
       </h1>
