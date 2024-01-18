@@ -26,7 +26,7 @@ app.use(passport.session());
 
 app.use(express.static("D:/WebDev/task_tracker/frontend/build"))
 
-//app.use('/auth',authroutes);
+app.use('/auth',authroutes);
 
 
 app.get('/',(req:Request,res:Response)=>{

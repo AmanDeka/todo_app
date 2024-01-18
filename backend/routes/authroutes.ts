@@ -29,9 +29,9 @@ authroutes.post('/logout', function (req: Request, res: Response, next) {
 });
 
 authroutes.post('/signup', async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
+    const { name, password } = req.body;
 
-    console.log(name,email,password)
+    console.log(name,password)
 
     try {
         // Hash the password
