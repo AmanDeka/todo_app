@@ -6,7 +6,7 @@ interface UserContextProps {
 
 interface User {
     id: number;
-    rname: string;
+    name: string;
 }
 
 interface UserContextValue {

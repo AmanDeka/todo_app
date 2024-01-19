@@ -4,7 +4,7 @@ import path from 'path';
 import expressSession from 'express-session';
 import authroutes from './routes/authroutes';
 import passport from 'passport';
-import { PrismaClient } from '@prisma/client';
+import dataroutes from './routes/dataroutes';
 
 
 const app = express()
@@ -24,13 +24,14 @@ app.use(passport.session());
 
 
 
-app.use(express.static("D:/WebDev/task_tracker/frontend/build"))
+app.use(express.static("D:/WebDev/todo_app/frontend/build"))
 
 app.use('/auth',authroutes);
+app.use('/data',dataroutes);
 
 
 app.get('/',(req:Request,res:Response)=>{
-    res.sendFile('D:/WebDev/task_tracker/frontend/build/index.html');
+    res.sendFile('D:/WebDev/todo_app/frontend/build/index.html');
 });
 
 

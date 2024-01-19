@@ -1,7 +1,7 @@
 import express, { Response, Request } from 'express';
 import passport from '../passport';
 import bcrypt from 'bcrypt';
-import { insertUser } from '../mongo';
+import { insertUser } from '../models/user';
 
 interface User{
     id?:string;
