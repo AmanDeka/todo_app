@@ -18,7 +18,6 @@ export const getPageByUserId = async (userId: string) => {
                 userId: userId
             }
         })
-        console.log('pages', pages);
         return pages;
     }
     catch (e) {
