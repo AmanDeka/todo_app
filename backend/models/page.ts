@@ -18,7 +18,7 @@ export const getPageByUserId = async (userId: string) => {
                 userId: userId
             }
         })
-        console.log('pages',pages);
+        console.log('pages', pages);
         return pages;
     }
     catch (e) {
@@ -38,6 +38,33 @@ export const insertPage = async (page: Page) => {
     }
 }
 
-export const updatePageName = async (id:string,newName:string) => {
+export const updatePageName = async (id: string, newName: string) => {
+    try {
+        const ret = await prisma.pages.update({
+            where: {
+                id: id
+            },
+            data: {
+                name: newName
+            }
+        });
+        return ret;
+    }
+    catch (e) {
+        throw e;
+    }
+}
 
+export const deletePage = async (id: string) => {
+    try {
+        const ret = await prisma.pages.delete({
+            where: {
+                id: id
+            },
+        });
+        return ret;
+    }
+    catch (e) {
+        throw e;
+    }
 }

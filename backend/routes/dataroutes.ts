@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { getPageByUserId, insertPage } from "../models/page";
+import { getPageByUserId, insertPage, updatePageName,deletePage } from "../models/page";
 
 const dataroutes = express.Router();
 
@@ -32,7 +32,7 @@ dataroutes.get('/page', async (req: Request, res: Response) => {
     }
 });
 
-dataroutes.post('/page', async (req:Request, res:Response) => {
+dataroutes.post('/page', async (req: Request, res: Response) => {
     try {
         const { pageTitle } = req.body;
 
@@ -54,5 +54,41 @@ dataroutes.post('/page', async (req:Request, res:Response) => {
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
+
+dataroutes.put('/page', async (req: Request, res: Response) => {
+    try {
+        const { pageId, newPageName } = req.body;
+
+        if (!pageId || !newPageName) {
+            return res.status(400).json({ success: false, error: 'PageId and newPageName are required in the request body.' });
+        }
+
+        // Update the page name in the database
+        const updatedPage = updatePageName(pageId, newPageName);
+
+        res.status(200).json({ success: true, page: updatedPage });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+dataroutes.delete('/page', async (req:Request, res:Response) => {
+    try {
+      const { pageId } = req.body;
+  
+      if (!pageId) {
+        return res.status(400).json({ success: false, error: 'PageId is required in the request parameters.' });
+      }
+  
+      // Delete the page in the database
+      const deletedPage = deletePage(pageId);
+  
+      res.status(200).json({ success: true, deletedPage });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  });
 
 export default dataroutes;
