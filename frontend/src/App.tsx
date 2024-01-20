@@ -11,27 +11,35 @@ import Signup from './components/signup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const getPages = () => {
-  const response = axios({
-    url: '/data/page',
-    method: 'GET',
-    withCredentials: true,
+  const response = axios({url: '/data/page',method: 'GET',withCredentials: true,
   }).then(data => {
     return data.data;
+  }).then(data => {
+    return data.pages;
   });
   return response;
 }
 
 const addPage = (pageTitle: string) => {
-  const response = axios({
-    url: '/data/page',
-    method: 'POST',
-    withCredentials: true,
+  const response = axios({url: '/data/page',method: 'POST',withCredentials: true,
     data: {
       pageTitle: pageTitle
     }
   }).then(data => {
     return data.data;
   });
+  return response;
+}
+
+const getUser = () => {
+  const response = axios({url: '/auth/user',method: 'GET',withCredentials: true,
+  }).then(data => {
+    return data.data;
+  }).then(data => {
+    if(!data.ok)throw new Error('Network Error');
+    return data.user
+  });
+  //if (response == null) throw 'user not found';
   return response;
 }
 
@@ -43,7 +51,7 @@ function App() {
   //const [pages, setPages] = useState<PageType[]>([]);
 
   const { user, setUser } = useUser();
-  const navigate = useNavigate();
+
   const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(true);
@@ -54,34 +62,24 @@ function App() {
 
     addPageMutation.mutate(pageTitle);
   };
+ 
+
+  const { data: quser, isSuccess: userSuccess } = useQuery({
+    queryFn: getUser,
+    queryKey: ['user'],
+
+  });
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios({
-          url: '/auth/user',
-          method: 'GET',
-          withCredentials: true,
-        });
+    setUser(quser);
+  }, [quser])
 
-        const userData = response.data.user;
-        if (userData) {
-          setUser(userData);
-        }
 
-        setLoading(false);
-      } catch (error) {
-        console.error('Authentication check failed', error);
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  const { data: pages, isLoading, isError, isSuccess } = useQuery({
+  const { data: pages, isLoading, isError, isSuccess: querySuccess } = useQuery({
     queryFn: getPages,
-    queryKey: ['pages']
+    queryKey: ['pages'],
+    enabled: !!user,
+    placeholderData: []
   });
 
   const addPageMutation = useMutation({
@@ -122,7 +120,7 @@ function App() {
     return <div>Loading...</div>;
   }
 
-  if (isSuccess) {
+  if (querySuccess) {
     console.log('pages', pages);
   }
 
@@ -136,12 +134,12 @@ function App() {
             (typeof pages != 'undefined')
               ?
               (
-              pages.pages.map((page: PageType) => (
-                <li key={page.id}>
-                  <Link to={`/pages/${page.id}`}>{page.name}</Link>
-                </li>
-              )))
-  
+                pages.map((page: PageType) => (
+                  <li key={page.id}>
+                    <Link to={`/pages/${page.id}`}>{page.name}</Link>
+                  </li>
+                )))
+
               :
               ([])
           }
@@ -153,7 +151,7 @@ function App() {
           {
             (typeof pages != 'undefined')
               ?
-              (pages.pages.map((page: PageType) => (
+              (pages.map((page: PageType) => (
                 <Route path={`/pages/:pageId`} element={<Page />} />
               ))
               )
