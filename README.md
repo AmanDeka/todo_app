@@ -19,5 +19,5 @@ A multipage todo application. Made for a task given by W3DEV
 - tailwind-css
 
 ### Demo video - 
-    https://www.loom.com/share/845ca758de5f46da95ea46b17d93a726?sid=882dbd71-5547-40ae-9fe4-1db0348a1d95
-    (There are still a few bugs related to caching)
+[https://www.loom.com/share/845ca758de5f46da95ea46b17d93a726?sid=882dbd71-5547-40ae-9fe4-1db0348a1d95](https://www.loom.com/share/845ca758de5f46da95ea46b17d93a726?sid=882dbd71-5547-40ae-9fe4-1db0348a1d95)
+(There are still a few bugs related to caching)
