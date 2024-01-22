@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Task from './Task';
-import { useQueryClient ,useQuery,useMutation} from '@tanstack/react-query';
+import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 
 interface TaskType {
-  id:string
+  id: string
   name: string;
   description: string;
   completed: boolean;
 }
 
-const getTasks = (pageId: string|undefined) => {
-  console.log('get tasks',typeof pageId);
+const getTasks = (pageId: string | undefined) => {
+  console.log('get tasks', typeof pageId);
   const response = axios({
     url: '/data/task', method: 'GET',
     params: {
@@ -26,15 +26,15 @@ const getTasks = (pageId: string|undefined) => {
   return response;
 }
 
-const addTask = ({taskTitle,taskDescription,completed,pageId}:
-  {taskTitle: string,taskDescription:string,completed:boolean,pageId:string|undefined}) => {
+const addTask = ({ taskTitle, taskDescription, completed, pageId }:
+  { taskTitle: string, taskDescription: string, completed: boolean, pageId: string | undefined }) => {
   const response = axios({
     url: '/data/task', method: 'POST', withCredentials: true,
     data: {
       taskTitle: taskTitle,
-      taskDescription:taskDescription,
-      completed:completed,
-      pageId:pageId
+      taskDescription: taskDescription,
+      completed: completed,
+      pageId: pageId
     }
   }).then(data => {
     return data.data;
@@ -42,12 +42,25 @@ const addTask = ({taskTitle,taskDescription,completed,pageId}:
   return response;
 }
 
-const changeTaskCompletion = ({taskId,newTaskCompletion}:{taskId:string,newTaskCompletion:boolean}) => {
+const deleteTask = (taskId: string) => {
+  const response = axios({
+    url: '/data/task', method: 'DELETE', withCredentials: true,
+    data: {
+      taskId: taskId
+    }
+  }).then(data => {
+    return data.data;
+  });
+  return response;
+}
+
+
+const changeTaskCompletion = ({ taskId, newTaskCompletion }: { taskId: string, newTaskCompletion: boolean }) => {
   const response = axios({
     url: '/data/task/completion', method: 'PUT', withCredentials: true,
     data: {
-      taskId:taskId,
-      newTaskCompletion:newTaskCompletion
+      taskId: taskId,
+      newTaskCompletion: newTaskCompletion
     }
   }).then(data => {
     return data.data;
@@ -88,8 +101,8 @@ const Page: React.FC = () => {
   const queryClient = useQueryClient();
 
   const { data: tasks, isLoading, isError, isSuccess: querySuccess } = useQuery({
-    queryFn: ()=>{return getTasks(pageId)},
-    queryKey: ['task',pageId],
+    queryFn: () => { return getTasks(pageId) },
+    queryKey: ['task', pageId],
     staleTime: 0,
     placeholderData: [],
   });
@@ -98,7 +111,20 @@ const Page: React.FC = () => {
     mutationFn: addTask,
     onSuccess: () => {
       // Invalidate and refetch the user pages on success
-      queryClient.invalidateQueries({ queryKey: ['task',pageId] });
+      queryClient.invalidateQueries({ queryKey: ['task', pageId] });
+    },
+  });
+
+  const handleDeleteTaskMutation = useMutation({
+    mutationFn: deleteTask,
+    onSuccess: (_, variables) => {
+      // Remove the deleted page from the 'pages' query data
+      queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
+        if (prevData) {
+          return prevData.filter((task) => task.id !== variables);
+        }
+        return prevData;
+      });
     },
   });
 
@@ -106,7 +132,7 @@ const Page: React.FC = () => {
     mutationFn: changeTaskCompletion,
     onSuccess: (_, variables) => {
       // Remove the deleted page from the 'pages' query data
-      queryClient.setQueryData(['task',pageId], (prevData: TaskType[] | undefined) => {
+      queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
         if (prevData) {
           return prevData.map((task) =>
             task.id === variables.taskId ? { ...task, completed: variables.newTaskCompletion } : task
@@ -119,10 +145,10 @@ const Page: React.FC = () => {
 
   const updateTaskNameMutation = useMutation({
     mutationFn: updateTaskName,
-    onSuccess: (_,variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate and refetch the user pages on success
       console.log('Task name successfully updates');
-      queryClient.setQueryData(['task',pageId], (prevData: TaskType[] | undefined) => {
+      queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
         if (prevData) {
           return prevData.map((task) =>
             task.id === variables.taskId ? { ...task, name: variables.newTaskName } : task
@@ -135,10 +161,10 @@ const Page: React.FC = () => {
 
   const updateTaskDescriptionMutation = useMutation({
     mutationFn: updateTaskDescription,
-    onSuccess: (_,variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate and refetch the user pages on success
       console.log('Task Description successfully updates');
-      queryClient.setQueryData(['task',pageId], (prevData: TaskType[] | undefined) => {
+      queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
         if (prevData) {
           return prevData.map((task) =>
             task.id === variables.taskId ? { ...task, description: variables.newTaskDesc } : task
@@ -151,22 +177,26 @@ const Page: React.FC = () => {
 
 
   const handleTaskAdd = () => {
-    addTaskMutation.mutate({taskTitle:'New Task',taskDescription:'Description',completed:false,pageId:pageId});
+    addTaskMutation.mutate({ taskTitle: 'New Task', taskDescription: 'Description', completed: false, pageId: pageId });
   };
 
-  const handleTaskCompletion = (taskId: string,newTaskCompletion:boolean) => {
-      taskCompletionMutation.mutate({taskId,newTaskCompletion});
+  const handleTaskCompletion = (taskId: string, newTaskCompletion: boolean) => {
+    taskCompletionMutation.mutate({ taskId, newTaskCompletion });
   };
 
-  const handleTaskTitleChange = (taskId:string,newTaskName:string) => {
-    updateTaskNameMutation.mutate({taskId:taskId,newTaskName:newTaskName});
+  const handleTaskTitleChange = (taskId: string, newTaskName: string) => {
+    updateTaskNameMutation.mutate({ taskId: taskId, newTaskName: newTaskName });
   }
 
-  const handleTaskDescriptionChange = (taskId:string,newTaskDesc:string) => {
-    updateTaskDescriptionMutation.mutate({taskId:taskId,newTaskDesc:newTaskDesc});
+  const handleTaskDescriptionChange = (taskId: string, newTaskDesc: string) => {
+    updateTaskDescriptionMutation.mutate({ taskId: taskId, newTaskDesc: newTaskDesc });
   }
 
-  const completedTasksCount = (typeof tasks == 'object')?tasks.filter((task:TaskType) => task.completed).length:0;
+  const handleDeleteTask = (taskId: string) => {
+    handleDeleteTaskMutation.mutate(taskId);
+  }
+
+  const completedTasksCount = (typeof tasks == 'object') ? tasks.filter((task: TaskType) => task.completed).length : 0;
   console.log(tasks);
   return (
     <div>
@@ -182,16 +212,17 @@ const Page: React.FC = () => {
       <button onClick={handleTaskAdd}>Add Task</button>
       <div className='flex flex-wrap gap-16'>
 
-        {tasks.map((task:TaskType) => (
+        {tasks.map((task: TaskType) => (
           <Task
-            key = {task.id}
+            key={task.id}
             id={task.id}
             initialHeading={task.name}
             initialDescription={task.description}
             completed={task.completed}
-            onToggleCompletion={() => handleTaskCompletion(task.id,!task.completed)}
-            onTitleChange={(newTitle:string) => handleTaskTitleChange(task.id,newTitle)}
-            onDescriptionChange={(newDescription:string)=>handleTaskDescriptionChange(task.id,newDescription)}
+            onToggleCompletion={() => handleTaskCompletion(task.id, !task.completed)}
+            onTitleChange={(newTitle: string) => handleTaskTitleChange(task.id, newTitle)}
+            onDescriptionChange={(newDescription: string) => handleTaskDescriptionChange(task.id, newDescription)}
+            onDelete={(taskId: string) => handleDeleteTask(taskId)}
           />
         ))}
 

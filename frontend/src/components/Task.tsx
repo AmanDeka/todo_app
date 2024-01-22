@@ -9,6 +9,15 @@ import { Button } from './button';
 import { cn } from '../lib/utils';
 import { X, Check } from 'lucide-react';
 import { Textarea } from './textarea';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem
+} from '@radix-ui/react-dropdown-menu';
+import { MoreVertical } from 'lucide-react';
 
 interface TaskProps {
   id: string;
@@ -18,6 +27,7 @@ interface TaskProps {
   onToggleCompletion: () => void;
   onTitleChange: (newTitle: string) => void;
   onDescriptionChange: (newDescription: string) => void;
+  onDelete: (taskId: string) => void;
 }
 
 const Task: React.FC<TaskProps> = ({
@@ -27,7 +37,8 @@ const Task: React.FC<TaskProps> = ({
   completed,
   onToggleCompletion,
   onTitleChange,
-  onDescriptionChange
+  onDescriptionChange,
+  onDelete
 }) => {
   const [heading, setHeading] = useState(initialHeading);
   const [description, setDescription] = useState(initialDescription);
@@ -37,7 +48,7 @@ const Task: React.FC<TaskProps> = ({
   const headingRef = useRef<HTMLHeadingElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
-  console.log(id,initialHeading);
+  console.log(id, initialHeading);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -85,6 +96,10 @@ const Task: React.FC<TaskProps> = ({
     onDescriptionChange(description);
   };
 
+  const handleDeleteClick = () => {
+    onDelete(id);
+  }
+
   return (
     <Card className={cn("w-[380px]", "border-slate-500", "text-wrap", "task")}>
       <CardHeader>
@@ -106,6 +121,20 @@ const Task: React.FC<TaskProps> = ({
             </h2>
           )}
         </CardTitle>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant={'outline'} size={'icon'}><MoreVertical className='h-4 w-4' /></Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-primary border text-primary-foreground w-41 p-4">
+            <DropdownMenuLabel>Options</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className='w-full'>
+              <Button onClick={() => handleDeleteClick()}>Delete</Button>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
       </CardHeader>
 
       <CardContent className="grid gap-4 w-full">
