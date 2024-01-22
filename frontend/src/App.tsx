@@ -19,6 +19,7 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 import { MoreVertical } from 'lucide-react';
 import { cn } from './lib/utils';
+import Logout from './components/logout';
 
 const getPages = () => {
   const response = axios({
@@ -106,12 +107,13 @@ function App() {
 
   useEffect(() => {
     setUser(quser);
+    console.log('user updated');
   }, [quser])
 
 
   const { data: pages, isLoading, isError, isSuccess: querySuccess, refetch } = useQuery({
     queryFn: getPages,
-    queryKey: ['pages'],
+    queryKey: ['pages',user],
     enabled: !!user,
     staleTime: Infinity,
     placeholderData: []
@@ -283,14 +285,17 @@ function App() {
         <Button onClick={handleAddPage}>Add Page</Button>
       </ScrollArea>
       <div className='flex flex-col w-full'>
-        <h1 className='text-3xl py-4'>Welcome {user.name}</h1>
+        <div className='flex justify-between'>
+        <h1 className='text-5xl py-4'>Welcome {user.name}</h1>
+        < Logout/>
+        </div>
         <div className="h-full w-full overflow-scroll">
           <Routes>
             {
               (typeof pages != 'undefined')
                 ?
                 (pages.map((page: PageType) => (
-                  <Route path={`/pages/:pageId`} element={<Page />} />
+                  <Route path={`/pages/:pageId`} element={<Page/>} />
                 ))
                 )
                 :

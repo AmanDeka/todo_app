@@ -24,7 +24,7 @@ authroutes.get('/user', (req: Request, res: Response) => {
 authroutes.post('/logout', function (req: Request, res: Response, next) {
     req.logout(function (err) {
         if (err) { return next(err); }
-        res.send();
+        res.status(200).json({ message: 'Logout successful' });;
     });
 });
 

@@ -201,8 +201,8 @@ const Page: React.FC = () => {
   console.log(tasks);
   return (
     <div className='w-full flex flex-col gap-y-10'>
-      
-      {(completedTasksCount == tasks.length)
+      <p className='text-3xl'>Your Tasks:</p>
+      {(completedTasksCount!=0 && completedTasksCount == tasks.length)
       ?<p className='text-lg text-green-700'>All tasks Completed !</p>
       :<p className='text-lg'>Completed Tasks: {completedTasksCount}</p>
       }
