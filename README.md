@@ -10,6 +10,7 @@ made for a task given by W3DEV
 - prisma - Database ORM
 - passport-js - Authentication
 - bcrypt - password hashing
+- mongodb
 
 ### Frontend
 - react-js
