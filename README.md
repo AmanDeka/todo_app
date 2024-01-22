@@ -5,6 +5,14 @@ made for a task given by W3DEV
 # Packages Used
 <br>
 
-## Backend
+### Backend
 - express-js
-- prisma
+- prisma - Database ORM
+- passport-js - Authentication
+- bcrypt - password hashing
+
+### Frontend
+- react-js
+- tanstack-query - Query Management (caching)
+- react-router - Single app routing
+- tailwind-css
