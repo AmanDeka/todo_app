@@ -13,7 +13,7 @@ interface User{
 passport.use(
     new LocalStrategy({ usernameField: 'name' }, async (name, password, done) => {
         try {
-            // Fetch the user by email
+
             const user = await getUserByName(name,true);
 
             console.log(name,password);
@@ -47,7 +47,7 @@ passport.serializeUser((user:User, done) => {
 
 passport.deserializeUser(async (id:string, done) => {
     try {
-      // Implement a function to fetch the user by ID from your database
+
       const user = await getUserById(id,false);
   
       if (user!=null) {
