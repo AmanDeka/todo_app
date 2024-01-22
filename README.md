@@ -1,6 +1,7 @@
 # Todo App
 <br>
-A multipage todo application :pencil:. Made for a task given by W3DEV
+A multipage todo application :pencil: :book:. <br>
+Made for a task given by W3DEV
 
 ## Packages Used
 <br>
