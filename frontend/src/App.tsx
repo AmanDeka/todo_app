@@ -244,7 +244,7 @@ function App() {
   return (
     <div className="App fixed flex h-screen w-screen gap-10">
       <ScrollArea className="absolute top-0 left-0 h-full min-w-60 rounded-md border border-slate-500 p-4">
-        Pages:
+        <h1 className='text-2xl'>Your Pages:</h1>
         <ul className='w-full items-center py-4'>
           {pages.map((page: PageType) => (
             <li key={page.id}>
@@ -283,7 +283,7 @@ function App() {
         <Button onClick={handleAddPage}>Add Page</Button>
       </ScrollArea>
       <div className='flex flex-col w-full'>
-        <h1>Welcome {user.name}</h1>
+        <h1 className='text-3xl py-4'>Welcome {user.name}</h1>
         <div className="h-full w-full overflow-scroll">
           <Routes>
             {

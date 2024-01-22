@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Task from './Task';
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import { Button } from './button';
 
 interface TaskType {
   id: string
@@ -199,17 +200,13 @@ const Page: React.FC = () => {
   const completedTasksCount = (typeof tasks == 'object') ? tasks.filter((task: TaskType) => task.completed).length : 0;
   console.log(tasks);
   return (
-    <div>
-      <h1>
-        <input
-          type="text"
-          value={pageId}
-          placeholder="Page Name"
-        />
-      </h1>
-      <p>Completed Tasks: {completedTasksCount}</p>
-
-      <button onClick={handleTaskAdd}>Add Task</button>
+    <div className='w-full flex flex-col gap-y-10'>
+      
+      {(completedTasksCount == tasks.length)
+      ?<p className='text-lg text-green-700'>All tasks Completed !</p>
+      :<p className='text-lg'>Completed Tasks: {completedTasksCount}</p>
+      }
+      <Button className='w-1/6' onClick={handleTaskAdd}>Add Task</Button>
       <div className='flex flex-wrap gap-16'>
 
         {tasks.map((task: TaskType) => (

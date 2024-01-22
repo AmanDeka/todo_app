@@ -102,7 +102,7 @@ const Task: React.FC<TaskProps> = ({
 
   return (
     <Card className={cn("w-[380px]", "border-slate-500", "text-wrap", "task")}>
-      <CardHeader>
+      <CardHeader className='grid grid-cols-2'>
         <CardTitle>
           {isEditingHeading ? (
             <input
