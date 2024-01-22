@@ -22,7 +22,7 @@ dataroutes.get('/page', async (req: Request, res: Response) => {
         }
 
         console.log(userId);
-        // Fetch user's pages
+
         const userPages = await getPageByUserId(userId);
 
 
@@ -46,7 +46,7 @@ dataroutes.post('/page', async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, error: 'UserId, pageTitle, and pageContent are required in the request body.' });
         }
 
-        // Insert the new page into the database
+
         const newPage = insertPage({ name: pageTitle, userId: userId });
 
         res.status(201).json({ success: true, page: newPage });
@@ -64,7 +64,7 @@ dataroutes.put('/page', async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, error: 'PageId and newPageName are required in the request body.' });
         }
 
-        // Update the page name in the database
+
         const updatedPage = updatePageName(pageId, newPageName);
 
         res.status(200).json({ success: true, page: updatedPage });
@@ -82,7 +82,7 @@ dataroutes.delete('/page', async (req:Request, res:Response) => {
         return res.status(400).json({ success: false, error: 'PageId is required in the request parameters.' });
       }
   
-      // Delete the page in the database
+
       const deletedPage = deletePage(pageId);
   
       res.status(200).json({ success: true, deletedPage });
@@ -102,7 +102,7 @@ dataroutes.delete('/page', async (req:Request, res:Response) => {
             return res.status(400).json({ success: false, error: 'PageId is required in the request body.' });
         }
 
-        // Fetch user's pages
+
         const userTasks = await getTaskByPageId(pageId);
 
 
@@ -140,7 +140,7 @@ dataroutes.put('/task/name', async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, error: 'PageId and newPageName are required in the request body.' });
         }
 
-        // Update the page name in the database
+
         const updatedTask = updateTaskName(taskId, newTaskName);
 
         res.status(200).json({ success: true, task: updatedTask });
@@ -158,7 +158,7 @@ dataroutes.put('/task/description', async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, error: 'PageId and newPageName are required in the request body.' });
         }
 
-        // Update the page name in the database
+
         const updatedTask = updateTaskDesc(taskId, newTaskDesc);
 
         res.status(200).json({ success: true, task: updatedTask });
@@ -176,7 +176,7 @@ dataroutes.put('/task/completion', async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, error: 'TaskId and newPageName are required in the request body.' });
         }
 
-        // Update the page name in the database
+
         const updatedTask = updateTaskCompletion(taskId, newTaskCompletion);
 
         res.status(200).json({ success: true, task: updatedTask });
@@ -194,7 +194,7 @@ dataroutes.delete('/task', async (req:Request, res:Response) => {
         return res.status(400).json({ success: false, error: 'PageId is required in the request parameters.' });
       }
   
-      // Delete the page in the database
+
       const deletedTask = deleteTask(taskId);
   
       res.status(200).json({ success: true, deletedTask });

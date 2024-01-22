@@ -122,7 +122,6 @@ function App() {
   const addPageMutation = useMutation({
     mutationFn: addPage,
     onSuccess: () => {
-      // Invalidate and refetch the user pages on success
       queryClient.invalidateQueries({ queryKey: ['pages'] });
     },
   });
@@ -130,7 +129,6 @@ function App() {
   const updatePageNameMutation = useMutation({
     mutationFn: updatePageName,
     onSuccess: (_, variables) => {
-      // Invalidate and refetch the user pages on success
       console.log('Page name successfully updates');
       queryClient.setQueryData(['pages'], (prevData: PageType[] | undefined) => {
         if (prevData) {
@@ -146,7 +144,6 @@ function App() {
   const handleDeletePageMutation = useMutation({
     mutationFn: deletePage,
     onSuccess: (_, variables) => {
-      // Remove the deleted page from the 'pages' query data
       queryClient.setQueryData(['pages'], (prevData: PageType[] | undefined) => {
         if (prevData) {
           return prevData.filter((page) => page.id !== variables);
@@ -159,7 +156,6 @@ function App() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
-        // Clicked outside the input, submit the rename
         if (editingPage) {
           const newPageName = inputRef.current.value;
           handleRenameSubmit(editingPage, newPageName);
@@ -175,7 +171,7 @@ function App() {
   }, [editingPage]);
 
   const handleAddPage = () => {
-    const pageTitle = 'New Page Title'; // Replace with the actual title
+    const pageTitle = 'New Page Title'; 
 
     addPageMutation.mutate(pageTitle);
   };
@@ -186,7 +182,6 @@ function App() {
 
   const handleRenameClick = (pageId: string) => {
     setEditingPage(pageId);
-    // Set a small timeout to ensure the input is focused after the state has updated
   };
 
   const handleRenameSubmit = async (pageId: string, newPageName: string) => {

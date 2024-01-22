@@ -37,14 +37,14 @@ authroutes.post('/signup', async (req: Request, res: Response) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Generate a unique ID (You can use UUID or any other method)
+
 
         const user = {
             name: name,
             password: hashedPassword
         }
 
-        // Insert user data into PostgreSQL table
+
         insertUser(user);
 
         res.status(201).json({ message: 'User registered successfully' });

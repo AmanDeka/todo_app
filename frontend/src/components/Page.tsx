@@ -111,7 +111,6 @@ const Page: React.FC = () => {
   const addTaskMutation = useMutation({
     mutationFn: addTask,
     onSuccess: () => {
-      // Invalidate and refetch the user pages on success
       queryClient.invalidateQueries({ queryKey: ['task', pageId] });
     },
   });
@@ -119,7 +118,7 @@ const Page: React.FC = () => {
   const handleDeleteTaskMutation = useMutation({
     mutationFn: deleteTask,
     onSuccess: (_, variables) => {
-      // Remove the deleted page from the 'pages' query data
+
       queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
         if (prevData) {
           return prevData.filter((task) => task.id !== variables);
@@ -132,7 +131,7 @@ const Page: React.FC = () => {
   const taskCompletionMutation = useMutation({
     mutationFn: changeTaskCompletion,
     onSuccess: (_, variables) => {
-      // Remove the deleted page from the 'pages' query data
+
       queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
         if (prevData) {
           return prevData.map((task) =>
@@ -147,7 +146,7 @@ const Page: React.FC = () => {
   const updateTaskNameMutation = useMutation({
     mutationFn: updateTaskName,
     onSuccess: (_, variables) => {
-      // Invalidate and refetch the user pages on success
+
       console.log('Task name successfully updates');
       queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
         if (prevData) {
@@ -163,7 +162,7 @@ const Page: React.FC = () => {
   const updateTaskDescriptionMutation = useMutation({
     mutationFn: updateTaskDescription,
     onSuccess: (_, variables) => {
-      // Invalidate and refetch the user pages on success
+
       console.log('Task Description successfully updates');
       queryClient.setQueryData(['task', pageId], (prevData: TaskType[] | undefined) => {
         if (prevData) {
