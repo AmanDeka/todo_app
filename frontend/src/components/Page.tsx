@@ -12,10 +12,11 @@ interface TaskType {
 }
 
 const getTasks = (pageId: string|undefined) => {
+  console.log('get tasks',typeof pageId);
   const response = axios({
-    url: '/data/task', method: 'GET', withCredentials: true,
-    data: {
-      pageId: pageId
+    url: '/data/task', method: 'GET',
+    params: {
+      pageId: pageId,
     }
   }).then(data => {
     return data.data;
@@ -54,6 +55,32 @@ const changeTaskCompletion = ({taskId,newTaskCompletion}:{taskId:string,newTaskC
   return response;
 }
 
+const updateTaskName = ({ taskId, newTaskName }: { taskId: string, newTaskName: string }) => {
+  const response = axios({
+    url: '/data/task/name', method: 'PUT', withCredentials: true,
+    data: {
+      taskId: taskId,
+      newTaskName: newTaskName
+    }
+  }).then(data => {
+    return data.data;
+  });
+  return response;
+}
+
+const updateTaskDescription = ({ taskId, newTaskDesc }: { taskId: string, newTaskDesc: string }) => {
+  const response = axios({
+    url: '/data/task/description', method: 'PUT', withCredentials: true,
+    data: {
+      taskId: taskId,
+      newTaskDesc: newTaskDesc
+    }
+  }).then(data => {
+    return data.data;
+  });
+  return response;
+}
+
 
 const Page: React.FC = () => {
   const { pageId } = useParams();
@@ -63,8 +90,8 @@ const Page: React.FC = () => {
   const { data: tasks, isLoading, isError, isSuccess: querySuccess } = useQuery({
     queryFn: ()=>{return getTasks(pageId)},
     queryKey: ['task',pageId],
-    staleTime: Infinity,
-    placeholderData: []
+    staleTime: 0,
+    placeholderData: [],
   });
 
   const addTaskMutation = useMutation({
@@ -90,6 +117,38 @@ const Page: React.FC = () => {
     },
   });
 
+  const updateTaskNameMutation = useMutation({
+    mutationFn: updateTaskName,
+    onSuccess: (_,variables) => {
+      // Invalidate and refetch the user pages on success
+      console.log('Task name successfully updates');
+      queryClient.setQueryData(['task',pageId], (prevData: TaskType[] | undefined) => {
+        if (prevData) {
+          return prevData.map((task) =>
+            task.id === variables.taskId ? { ...task, name: variables.newTaskName } : task
+          );
+        }
+        return prevData;
+      });
+    },
+  });
+
+  const updateTaskDescriptionMutation = useMutation({
+    mutationFn: updateTaskDescription,
+    onSuccess: (_,variables) => {
+      // Invalidate and refetch the user pages on success
+      console.log('Task Description successfully updates');
+      queryClient.setQueryData(['task',pageId], (prevData: TaskType[] | undefined) => {
+        if (prevData) {
+          return prevData.map((task) =>
+            task.id === variables.taskId ? { ...task, description: variables.newTaskDesc } : task
+          );
+        }
+        return prevData;
+      });
+    },
+  });
+
 
   const handleTaskAdd = () => {
     addTaskMutation.mutate({taskTitle:'New Task',taskDescription:'Description',completed:false,pageId:pageId});
@@ -99,8 +158,16 @@ const Page: React.FC = () => {
       taskCompletionMutation.mutate({taskId,newTaskCompletion});
   };
 
-  const completedTasksCount = tasks.filter((task:TaskType) => task.completed).length;
+  const handleTaskTitleChange = (taskId:string,newTaskName:string) => {
+    updateTaskNameMutation.mutate({taskId:taskId,newTaskName:newTaskName});
+  }
 
+  const handleTaskDescriptionChange = (taskId:string,newTaskDesc:string) => {
+    updateTaskDescriptionMutation.mutate({taskId:taskId,newTaskDesc:newTaskDesc});
+  }
+
+  const completedTasksCount = (typeof tasks == 'object')?tasks.filter((task:TaskType) => task.completed).length:0;
+  console.log(tasks);
   return (
     <div>
       <h1>
@@ -117,11 +184,14 @@ const Page: React.FC = () => {
 
         {tasks.map((task:TaskType) => (
           <Task
+            key = {task.id}
             id={task.id}
             initialHeading={task.name}
             initialDescription={task.description}
             completed={task.completed}
             onToggleCompletion={() => handleTaskCompletion(task.id,!task.completed)}
+            onTitleChange={(newTitle:string) => handleTaskTitleChange(task.id,newTitle)}
+            onDescriptionChange={(newDescription:string)=>handleTaskDescriptionChange(task.id,newDescription)}
           />
         ))}
 

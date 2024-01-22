@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '../hooks/userContext';
+import { Input } from './input';
+import { Button } from './button';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -25,22 +27,22 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className='w-full h-full flex justify-center'>
+            <form className='w-1/2 flex flex-col border rounded-md border-slate-500 items-center space-y-4 p-4'>
             <h2>Login</h2>
-            <form>
                 <label>
                     Name:
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                    <Input type="text" placeholder = "Username" value={name} onChange={(e) => setName(e.target.value)} />
                 </label>
                 <br />
                 <label>
                     Password:
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <Input type="password" placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
                 </label>
                 <br />
-                <button type="button" onClick={handleLogin}>
+                <Button type="button" onClick={handleLogin} variant={'default'}>
                     Login
-                </button>
+                </Button>
             </form>
         </div>
     );

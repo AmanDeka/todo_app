@@ -95,9 +95,10 @@ dataroutes.delete('/page', async (req:Request, res:Response) => {
 
   dataroutes.get('/task', async (req: Request, res: Response) => {
     try {
-        const {pageId} = req.body;
 
-        if (!pageId) {
+        const pageId = req.query.pageId;
+    
+        if (!pageId || typeof pageId != 'string') {
             return res.status(400).json({ success: false, error: 'PageId is required in the request body.' });
         }
 
@@ -171,8 +172,8 @@ dataroutes.put('/task/completion', async (req: Request, res: Response) => {
     try {
         const { taskId, newTaskCompletion } = req.body;
 
-        if (!taskId || !newTaskCompletion) {
-            return res.status(400).json({ success: false, error: 'PageId and newPageName are required in the request body.' });
+        if (!taskId || newTaskCompletion==null) {
+            return res.status(400).json({ success: false, error: 'TaskId and newPageName are required in the request body.' });
         }
 
         // Update the page name in the database

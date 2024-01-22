@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
 } from "./card";
 import { Button } from './button';
 import { cn } from '../lib/utils';
-import { X,Check } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 import { Textarea } from './textarea';
 
 interface TaskProps {
@@ -16,78 +16,115 @@ interface TaskProps {
   initialDescription: string;
   completed: boolean;
   onToggleCompletion: () => void;
+  onTitleChange: (newTitle: string) => void;
+  onDescriptionChange: (newDescription: string) => void;
 }
 
-const Task: React.FC<TaskProps> = ({ id, initialHeading, initialDescription, completed, onToggleCompletion }) => {
+const Task: React.FC<TaskProps> = ({
+  id,
+  initialHeading,
+  initialDescription,
+  completed,
+  onToggleCompletion,
+  onTitleChange,
+  onDescriptionChange
+}) => {
   const [heading, setHeading] = useState(initialHeading);
   const [description, setDescription] = useState(initialDescription);
   const [isEditingHeading, setIsEditingHeading] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
 
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+
+  console.log(id,initialHeading);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (isEditingHeading && headingRef.current && !headingRef.current.contains(event.target as Node)) {
+        handleHeadingBlur();
+      }
+
+      if (isEditingDescription && descriptionRef.current && !descriptionRef.current.contains(event.target as Node)) {
+        handleDescriptionBlur();
+      }
+    };
+
+    if (isEditingHeading || isEditingDescription) {
+      document.addEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isEditingHeading, isEditingDescription]);
+
   const handleHeadingClick = () => {
     setIsEditingHeading(true);
+  };
+
+  const handleHeadingChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setHeading(event.target.value);
+  };
+
+  const handleHeadingBlur = () => {
+    setIsEditingHeading(false);
+    onTitleChange(heading);
   };
 
   const handleDescriptionClick = () => {
     setIsEditingDescription(true);
   };
 
-  const handleHeadingChange: React.ChangeEventHandler<HTMLHeadingElement> = (event) => {
-    setHeading(event.target.innerText);
-  };
-
-  const handleDescriptionChange: React.ChangeEventHandler<HTMLParagraphElement> = (event) => {
-    setDescription(event.target.innerText);
-  };
-
-  const handleHeadingBlur = () => {
-    setIsEditingHeading(false);
+  const handleDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(event.target.value);
   };
 
   const handleDescriptionBlur = () => {
     setIsEditingDescription(false);
+    onDescriptionChange(description);
   };
 
   return (
     <Card className={cn("w-[380px]", "border-slate-500", "text-wrap", "task")}>
-      <CardHeader >
+      <CardHeader>
         <CardTitle>
-          <h2
-            onClick={handleHeadingClick}
-            onBlur={handleHeadingBlur}
-            contentEditable={isEditingHeading}
-            suppressContentEditableWarning={true}>{heading}</h2>
+          {isEditingHeading ? (
+            <input
+              type="text"
+              value={heading}
+              onChange={handleHeadingChange}
+              onBlur={handleHeadingBlur}
+            />
+          ) : (
+            <h2
+              onClick={handleHeadingClick}
+              suppressContentEditableWarning={true}
+              ref={headingRef}
+            >
+              {heading}
+            </h2>
+          )}
         </CardTitle>
       </CardHeader>
 
-
-
       <CardContent className="grid gap-4 w-full">
-        <Textarea className="flex items-center space-x-4 rounded-md border border-slate-500 p-4 w-11/12 resize-none"
+        <Textarea
+          className="flex items-center space-x-4 rounded-md border border-slate-500 p-4 w-11/12 resize-none"
+          ref={descriptionRef}
           onClick={handleDescriptionClick}
           onBlur={handleDescriptionBlur}
-          contentEditable={isEditingDescription}
-          suppressContentEditableWarning={true}
-        >
-          {description}
-        </Textarea>
-
+          value={description}
+          onChange={handleDescriptionChange}
+        />
 
         <Button
           className={`w-5/12 ${completed ? 'bg-green-500' : 'border-slate-500'}`}
           variant={'outline'}
           onClick={onToggleCompletion}
         >
-          {
-            !completed
-            ?
-            (<><X />Not Done</>)
-            :
-            (<><Check />Done</>)
-}
+          {completed ? <><Check />Done</> : <><X />Not Done</>}
         </Button>
-
-
       </CardContent>
     </Card>
   );

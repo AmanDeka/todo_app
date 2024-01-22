@@ -3,7 +3,7 @@ import './styles/global.css';
 import Page from './components/Page';
 import { ScrollArea } from './components/scrollarea';
 import { Routes, Route, Link } from 'react-router-dom';
-import { Button } from './components/button';
+import { Button, buttonVariants } from './components/button';
 import { useUser } from './hooks/userContext';
 import axios from 'axios';
 import Login from './components/login';
@@ -18,6 +18,7 @@ import {
   DropdownMenuItem
 } from '@radix-ui/react-dropdown-menu';
 import { MoreVertical } from 'lucide-react';
+import { cn } from './lib/utils';
 
 const getPages = () => {
   const response = axios({
@@ -46,7 +47,7 @@ const deletePage = (pageId: string) => {
   const response = axios({
     url: '/data/page', method: 'DELETE', withCredentials: true,
     data: {
-      pageId:pageId
+      pageId: pageId
     }
   }).then(data => {
     return data.data;
@@ -108,11 +109,11 @@ function App() {
   }, [quser])
 
 
-  const { data: pages, isLoading, isError, isSuccess: querySuccess,refetch } = useQuery({
+  const { data: pages, isLoading, isError, isSuccess: querySuccess, refetch } = useQuery({
     queryFn: getPages,
     queryKey: ['pages'],
     enabled: !!user,
-    staleTime:Infinity,
+    staleTime: Infinity,
     placeholderData: []
   });
 
@@ -126,7 +127,7 @@ function App() {
 
   const updatePageNameMutation = useMutation({
     mutationFn: updatePageName,
-    onSuccess: (_,variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate and refetch the user pages on success
       console.log('Page name successfully updates');
       queryClient.setQueryData(['pages'], (prevData: PageType[] | undefined) => {
@@ -203,19 +204,19 @@ function App() {
   };
 
 
-  
+
 
   if (user == null) {
     // User is not authorized
     return (
-      <div className="app">
+      <div className="app flex flex-col gap-4">
         <nav className="side-menu">
-          <ul>
+          <ul className='flex justify-center gap-4'>
             <li>
-              <Link to="/login">Login</Link>
+              <Link className={buttonVariants({ variant: "default" })} to="/login">Login</Link>
             </li>
             <li>
-              <Link to="/signup">Signup</Link>
+              <Link className={buttonVariants({ variant: "default" })} to="/signup">Signup</Link>
             </li>
           </ul>
         </nav>
@@ -242,9 +243,9 @@ function App() {
 
   return (
     <div className="App fixed flex h-screen w-screen gap-10">
-      <p>{user.name}</p>
-      <ScrollArea className="absolute top-0 left-0 h-full min-w-40 rounded-md border border-slate-500">
-        <ul>
+      <ScrollArea className="absolute top-0 left-0 h-full min-w-60 rounded-md border border-slate-500 p-4">
+        Pages:
+        <ul className='w-full items-center py-4'>
           {pages.map((page: PageType) => (
             <li key={page.id}>
               {editingPage === page.id ? (
@@ -257,20 +258,20 @@ function App() {
                   />
                 </div>
               ) : (
-                <div>
-                  <Link to={`/pages/${page.id}`}>{page.name}</Link>
+                <div className='w-full grid grid-cols-2 auto-cols-min gap-0'>
+                  <Link className={cn(buttonVariants({ variant: "outline" }), 'w-48', 'p-4')} to={`/pages/${page.id}`}>{page.name}</Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
-                      <MoreVertical />
+                      <Button variant={'outline'} size={'icon'}><MoreVertical className='h-4 w-4' /></Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent className="bg-primary border text-primary-foreground w-41 p-4">
                       <DropdownMenuLabel>Options</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <button onClick={() => handleRenameClick(page.id)}>Rename</button>
+                      <DropdownMenuItem className='w-full'>
+                        <Button onClick={() => handleRenameClick(page.id)}>Rename</Button>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <button onClick={() => handleDeletePage(page.id)}>Delete</button>
+                        <Button onClick={() => handleDeletePage(page.id)}>Delete</Button>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -281,19 +282,22 @@ function App() {
         </ul>
         <Button onClick={handleAddPage}>Add Page</Button>
       </ScrollArea>
-      <div className="h-full w-full overflow-scroll">
-        <Routes>
-          {
-            (typeof pages != 'undefined')
-              ?
-              (pages.map((page: PageType) => (
-                <Route path={`/pages/:pageId`} element={<Page />} />
-              ))
-              )
-              :
-              ([])
-          }
-        </Routes>
+      <div className='flex flex-col w-full'>
+        <h1>Welcome {user.name}</h1>
+        <div className="h-full w-full overflow-scroll">
+          <Routes>
+            {
+              (typeof pages != 'undefined')
+                ?
+                (pages.map((page: PageType) => (
+                  <Route path={`/pages/:pageId`} element={<Page />} />
+                ))
+                )
+                :
+                ([])
+            }
+          </Routes>
+        </div>
       </div>
     </div>
   );

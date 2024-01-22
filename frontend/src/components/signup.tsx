@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Input } from './input';
+import { buttonVariants } from './button';
 
 interface SignUpFormData {
     name: string;
@@ -47,34 +49,37 @@ const Signup: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Signup Page</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="name">Name:</label>
-                    <input
+        <div className='w-full h-full flex justify-center'>
+            <form onSubmit={handleSubmit} className='w-1/2 flex flex-col border rounded-md border-slate-500 items-center space-y-4 p-4'>
+                <h2>Signup Page</h2>
+                <label htmlFor="name">Name:
+                    <Input
                         type="text"
                         id="name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        placeholder='Username'
                         required
                     />
-                </div>
-                <div>
-                    <label htmlFor="password">Password:</label>
-                    <input
+                </label>
+
+
+                <label htmlFor="password">Password:
+                    <Input
                         type="password"
                         id="password"
                         name="password"
+                        placeholder='Password'
                         value={formData.password}
                         onChange={handleChange}
                         required
                     />
-                </div>
-                <div>
-                    <button type="submit">Sign Up</button>
-                </div>
+                </label>
+
+
+                <button className={buttonVariants({ variant: "default" })} type="submit">Sign Up</button>
+
             </form>
         </div>
     );
